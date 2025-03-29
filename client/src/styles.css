@@ -1,0 +1,358 @@
+:root {
+  --primary-color: #1A1A1A;
+  --primary-hover: #333333;
+  --background-color: #FFFFFF;
+  --text-color: #1A1A1A;
+  --text-light: #4A4A4A;
+  --white: #FFFFFF;
+  --gray-100: #F5F5F5;
+  --gray-200: #E5E5E5;
+  --gray-400: #9E9E9E;
+  --gray-500: #757575;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.5;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 3rem 0;
+  background-color: var(--gray-100);
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--text-color);
+}
+
+.search-container {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.search-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.search-input-container {
+  min-height: 4rem;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  cursor: text;
+  transition: all 0.2s ease;
+}
+
+.search-input-container:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-xl);
+}
+
+.selected-symptoms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.symptom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.remove-symptom {
+  cursor: pointer;
+  transition: color 0.15s ease;
+  color: var(--white);
+  opacity: 0.8;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+}
+
+.remove-symptom:hover {
+  opacity: 1;
+  color: var(--white);
+}
+
+.search-input {
+  width: 100%;
+  min-width: 200px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1.125rem;
+  color: var(--text-color);
+}
+
+.search-input::placeholder {
+  color: var(--gray-400);
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: 100%;
+  background-color: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  z-index: 10;
+}
+
+.suggestion-item {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.suggestion-item:hover .suggestion-description {
+  color: var(--gray-200);
+}
+
+.suggestion-name {
+  font-weight: 500;
+}
+
+.suggestion-description {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin-top: 0.25rem;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 1rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.results-container {
+  max-width: 64rem;
+  margin: 3rem auto 0;
+}
+
+.results-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-color);
+}
+
+.condition-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.condition-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.condition-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.condition-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.expand-icon {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.condition-description {
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.condition-treatments {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.condition-treatments h3 {
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin-bottom: 12px;
+}
+
+.condition-treatments ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.condition-treatments li {
+  color: #666;
+  padding: 8px 0;
+  position: relative;
+  padding-left: 24px;
+}
+
+.condition-treatments li:before {
+  content: "•";
+  color: #3498db;
+  position: absolute;
+  left: 8px;
+}
+
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.search-input:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.submit-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.nav-tab {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 1rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-tab:hover {
+  border-color: var(--primary-color);
+  background-color: var(--gray-100);
+}
+
+.nav-tab.active {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border-color: var(--primary-color);
+}
+
+.nav-tab.active:hover {
+  background-color: var(--primary-hover);
+}
+
+.suggestion-item.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+.interaction-medications {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background-color: var(--gray-100);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.interaction-medications strong {
+  color: var(--text-color);
+  margin-right: 0.5rem;
+}
+
+.search-description {
+  text-align: center;
+  color: var(--text-light);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
