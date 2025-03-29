@@ -729,3 +729,210 @@ body {
   line-height: 1.5;
   margin: 0;
 }
+
+.soap-generator {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+}
+
+.component-description {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.component-description h2 {
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
+.component-description p {
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+.soap-input-container {
+  margin-bottom: 2rem;
+}
+
+.soap-textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--gray-200);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+
+.soap-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.1);
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.generate-button,
+.print-button {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.generate-button {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.generate-button:hover:not(:disabled) {
+  background-color: #000000;
+}
+
+.generate-button:disabled {
+  background-color: var(--gray-400);
+  cursor: not-allowed;
+}
+
+.print-button {
+  background-color: var(--gray-100);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.print-button:hover {
+  background-color: var(--gray-200);
+}
+
+.soap-output {
+  background-color: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.soap-content {
+  line-height: 1.8;
+}
+
+.soap-content h1,
+.soap-content h2,
+.soap-content h3 {
+  color: var(--primary-color);
+  margin: 1.5rem 0 1rem;
+}
+
+.soap-content ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.soap-content li {
+  margin: 0.5rem 0;
+}
+
+.error-message {
+  text-align: center;
+  color: #dc2626;
+  background-color: #fee2e2;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .soap-content,
+  .soap-content * {
+    visibility: visible;
+  }
+
+  .soap-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 40px;
+    width: 100%;
+  }
+
+  .button-container {
+    display: none;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  body {
+    padding: 40px;
+    font-size: 12pt;
+  }
+
+  .soap-content {
+    padding: 0;
+    margin: 0;
+  }
+
+  .soap-content h1 {
+    font-size: 18pt;
+    margin-bottom: 20pt;
+  }
+
+  .soap-content h2 {
+    font-size: 14pt;
+    margin: 15pt 0 10pt 0;
+  }
+
+  .soap-content ul {
+    margin: 8pt 0;
+    padding-left: 20pt;
+  }
+
+  .soap-content li {
+    margin: 4pt 0;
+  }
+}
+
+.button-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.action-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: 1px solid var(--primary-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.action-button:hover {
+  background-color: #000000;
+}
+
+.download-button {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.download-button:hover {
+  background-color: #000000;
+}

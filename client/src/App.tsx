@@ -10,13 +10,14 @@ import { Register } from './components/Register'
 import { AuthProvider } from './contexts/AuthContext'
 import { api } from './services/api'
 import './styles.css'
+import SoapGenerator from './components/SoapGenerator'
 
 function AppContent() {
   const [selectedSymptoms, setSelectedSymptoms] = useState<Symptom[]>([])
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'symptoms' | 'medications' | 'chat'>('symptoms')
+  const [activeTab, setActiveTab] = useState<'symptoms' | 'medications' | 'chat' | 'soap'>('symptoms')
   const [showLogin, setShowLogin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
 
@@ -101,6 +102,12 @@ function AppContent() {
               >
                 Mental Health Chat
               </button>
+              <button
+                className={`nav-tab ${activeTab === 'soap' ? 'active' : ''}`}
+                onClick={() => setActiveTab('soap')}
+              >
+                SOAP Notes
+              </button>
             </div>
             {activeTab === 'symptoms' ? (
               <>
@@ -128,8 +135,10 @@ function AppContent() {
               </>
             ) : activeTab === 'medications' ? (
               <MedicationChecker isActive={activeTab === 'medications'} />
-            ) : (
+            ) : activeTab === 'chat' ? (
               <ChatBot />
+            ) : (
+              <SoapGenerator />
             )}
           </>
         )}
