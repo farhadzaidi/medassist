@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { api, ChatMessage } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import ReactMarkdown from 'react-markdown';
-import { ConfirmationModal } from './ConfirmationModal';
 
 interface Message {
   content: string;
@@ -14,7 +13,6 @@ export const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
@@ -36,16 +34,6 @@ export const ChatBot = () => {
       })));
     } catch (error) {
       console.error('Failed to load chat history:', error);
-    }
-  };
-
-  const handleDeleteChat = async () => {
-    try {
-      await api.deleteChatHistory();
-      setMessages([]);
-      setShowDeleteModal(false);
-    } catch (error) {
-      console.error('Failed to delete chat history:', error);
     }
   };
 
@@ -115,16 +103,6 @@ export const ChatBot = () => {
 
   return (
     <div className="chat-container">
-      {user && messages.length > 0 && (
-        <div className="chat-header">
-          <button
-            onClick={() => setShowDeleteModal(true)}
-            className="delete-chat-button"
-          >
-            Delete Chat History
-          </button>
-        </div>
-      )}
       <div className="chat-messages">
         {messages.map((message, index) => (
           <div
@@ -172,13 +150,6 @@ export const ChatBot = () => {
           Send
         </button>
       </div>
-      <ConfirmationModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDeleteChat}
-        title="Delete Chat History"
-        message="Are you sure you want to delete your chat history? This action cannot be undone."
-      />
     </div>
   );
 }; 

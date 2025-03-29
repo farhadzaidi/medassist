@@ -102,16 +102,6 @@ export const api = {
     return response.json();
   },
 
-  deleteChatHistory: async (): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/chat/history`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to delete chat history');
-    }
-  },
-
   saveChatMessage: async (message: string, isUser: boolean): Promise<ChatMessage> => {
     const response = await fetch(`${API_BASE_URL}/chat/save`, {
       method: 'POST',
