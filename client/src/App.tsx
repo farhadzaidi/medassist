@@ -10,7 +10,7 @@ import { Register } from './components/Register'
 import { AuthProvider } from './contexts/AuthContext'
 import { api } from './services/api'
 import './styles.css'
-import SoapGenerator from './components/SoapGenerator'
+import MedicalInterview from './components/SoapGenerator'
 
 function AppContent() {
   const [selectedSymptoms, setSelectedSymptoms] = useState<Symptom[]>([])
@@ -106,7 +106,7 @@ function AppContent() {
                 className={`nav-tab ${activeTab === 'soap' ? 'active' : ''}`}
                 onClick={() => setActiveTab('soap')}
               >
-                SOAP Notes
+                Medical Assessment
               </button>
             </div>
             {activeTab === 'symptoms' ? (
@@ -138,7 +138,7 @@ function AppContent() {
             ) : activeTab === 'chat' ? (
               <ChatBot />
             ) : (
-              <SoapGenerator />
+              <MedicalInterview />
             )}
           </>
         )}
