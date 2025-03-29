@@ -1,2 +1,7 @@
 flask==3.0.2
-flask-cors==4.0.0 
+flask-cors==4.0.0
+google-generativeai
+markdown
+flask-sqlalchemy
+flask-login
+werkzeug 

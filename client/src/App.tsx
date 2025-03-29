@@ -3,6 +3,7 @@ import { Symptom } from './data/mockData'
 import { SearchBar } from './components/SearchBar'
 import { Results } from './components/Results'
 import { MedicationChecker } from './components/MedicationChecker'
+import { ChatBot } from './components/ChatBot'
 import { api } from './services/api'
 import './styles.css'
 
@@ -11,7 +12,7 @@ function App() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'symptoms' | 'medications'>('symptoms')
+  const [activeTab, setActiveTab] = useState<'symptoms' | 'medications' | 'chat'>('symptoms')
 
   const handleSelectSymptom = (symptom: Symptom) => {
     setSelectedSymptoms(prev => [...prev, symptom])
@@ -61,6 +62,12 @@ function App() {
           >
             Medication Checker
           </button>
+          <button
+            className={`nav-tab ${activeTab === 'chat' ? 'active' : ''}`}
+            onClick={() => setActiveTab('chat')}
+          >
+            Mental Health Chat
+          </button>
         </div>
         {activeTab === 'symptoms' ? (
           <>
@@ -86,8 +93,10 @@ function App() {
               />
             </div>
           </>
-        ) : (
+        ) : activeTab === 'medications' ? (
           <MedicationChecker isActive={activeTab === 'medications'} />
+        ) : (
+          <ChatBot />
         )}
       </div>
     </div>
