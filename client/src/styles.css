@@ -33,6 +33,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  padding-top: 5rem;
 }
 
 .app {
@@ -381,10 +382,12 @@ body {
 
 .message {
   max-width: 80%;
-  padding: 12px 16px;
+  padding: 4px 12px;
   border-radius: 1rem;
   position: relative;
   box-shadow: var(--shadow-sm);
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .user-message {
@@ -392,6 +395,7 @@ body {
   background-color: var(--primary-color);
   color: var(--white);
   border-bottom-right-radius: 0.25rem;
+  max-width: 80%;
 }
 
 .bot-message {
@@ -400,35 +404,35 @@ body {
   color: var(--text-color);
   border-bottom-left-radius: 0.25rem;
   border: 2px solid var(--gray-200);
+  max-width: 80%;
 }
 
 .message-content {
-  margin-bottom: 4px;
-  line-height: 1.6;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  word-wrap: break-word;
   white-space: pre-wrap;
 }
 
 .message-content p {
-  margin: 0.5em 0;
-  color: inherit;
+  margin: 0.125rem 0;
+  line-height: 1.4;
+  white-space: pre-wrap;
 }
 
 .message-content ul,
 .message-content ol {
-  margin: 0.5em 0;
-  padding-left: 1.5em;
-  color: inherit;
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
 }
 
 .message-content li {
-  margin: 0.25em 0;
-  list-style-type: disc;
-  color: inherit;
+  margin: 0.25rem 0;
 }
 
 .message-content strong {
   font-weight: 600;
-  color: inherit;
 }
 
 .message-content em {
@@ -436,28 +440,25 @@ body {
 }
 
 .message-content blockquote {
-  margin: 0.5em 0;
-  padding: 0.5em 1em;
-  border-left: 4px solid var(--primary-color);
-  background-color: var(--gray-100);
-  font-style: italic;
-  color: inherit;
+  margin: 0.5rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--primary-color);
+  color: var(--text-color);
 }
 
 .message-content code {
   background-color: var(--gray-100);
-  padding: 0.2em 0.4em;
+  padding: 0.2rem 0.4rem;
   border-radius: 0.25rem;
   font-family: monospace;
-  color: inherit;
 }
 
 .message-content pre {
   background-color: var(--gray-100);
-  padding: 1em;
+  padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
-  margin: 0.5em 0;
+  margin: 0.5rem 0;
 }
 
 .message-content pre code {
@@ -474,27 +475,31 @@ body {
 
 .chat-input-form {
   display: flex;
-  gap: 12px;
-  padding: 20px;
-  border-top: 2px solid var(--gray-200);
+  gap: 0.5rem;
+  padding: 1rem;
   background-color: var(--white);
+  border-top: 1px solid var(--gray-200);
+  position: sticky;
+  bottom: 0;
 }
 
 .chat-input {
   flex: 1;
-  padding: 12px;
+  padding: 0.75rem;
   border: 2px solid var(--gray-200);
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   font-size: 1rem;
-  transition: all 0.15s ease;
-  background-color: var(--white);
-  color: var(--text-color);
+  resize: none;
+  min-height: 4.5rem;
+  max-height: 150px;
+  overflow-y: auto;
+  line-height: 1.5;
+  font-family: inherit;
 }
 
 .chat-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: var(--shadow-md);
 }
 
 .chat-input:disabled {
@@ -503,30 +508,24 @@ body {
 }
 
 .send-button {
-  padding: 12px 24px;
+  padding: 0.75rem 1.5rem;
   background-color: var(--primary-color);
   color: var(--white);
   border: none;
-  border-radius: 1rem;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 0.5rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  align-self: flex-end;
 }
 
 .send-button:hover:not(:disabled) {
   background-color: var(--primary-hover);
-  transform: translateY(-1px);
-}
-
-.send-button:active {
-  transform: translateY(0);
 }
 
 .send-button:disabled {
-  background-color: var(--gray-400);
+  background-color: var(--gray-300);
   cursor: not-allowed;
-  transform: none;
 }
 
 .typing-indicator {
@@ -562,4 +561,265 @@ body {
   40% {
     transform: scale(1.0);
   }
+}
+
+/* Auth Styles */
+.auth-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--white);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--gray-200);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.form-group input {
+  padding: 0.75rem;
+  border: 2px solid var(--gray-200);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.15s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+.auth-button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.auth-button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.auth-button:active {
+  transform: translateY(0);
+}
+
+.auth-button:disabled {
+  background-color: var(--gray-400);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-switch {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.auth-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.auth-link:hover {
+  color: var(--primary-hover);
+}
+
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-name {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.navbar-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.navbar-buttons .auth-button:first-child {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+}
+
+.navbar-buttons .auth-button:first-child:hover {
+  background-color: var(--primary-hover);
+  color: var(--white);
+}
+
+.navbar-buttons .auth-button:last-child {
+  border: 1px solid var(--primary-color);
+  background-color: transparent;
+  color: var(--primary-color);
+}
+
+.navbar-buttons .auth-button:last-child:hover {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.chat-disclaimer {
+  padding: 0.75rem 1rem;
+  background-color: var(--gray-100);
+  border-top: 1px solid var(--gray-200);
+  text-align: center;
+}
+
+.chat-disclaimer p {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--white);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-xl);
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h2 {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+  font-size: 1.25rem;
+}
+
+.modal-content p {
+  margin-bottom: 1.5rem;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-button.cancel {
+  background-color: var(--gray-100);
+  color: var(--text-color);
+  border: 1px solid var(--gray-200);
+}
+
+.modal-button.cancel:hover {
+  background-color: var(--gray-200);
+}
+
+.modal-button.confirm {
+  background-color: #dc2626;
+  color: var(--white);
+  border: none;
+}
+
+.modal-button.confirm:hover {
+  background-color: #b91c1c;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem;
+  background-color: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.delete-chat-button {
+  padding: 0.5rem 1rem;
+  background-color: #dc2626;
+  color: var(--white);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-chat-button:hover {
+  background-color: #b91c1c;
 }

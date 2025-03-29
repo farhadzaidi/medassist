@@ -5,6 +5,7 @@ import markdown
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 # Enable CORS for all routes with a simpler configuration
@@ -22,12 +23,20 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     name = db.Column(db.String(100), nullable=False)
+    chat_histories = db.relationship('ChatHistory', backref='user', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+class ChatHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    is_user = db.Column(db.Boolean, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 # Create database tables
 with app.app_context():
@@ -42,19 +51,16 @@ model = genai.GenerativeModel('gemini-2.0-flash')
 chat_sessions = {}
 
 # Mental health assistant system prompt
-MENTAL_HEALTH_PROMPT = """You are a compassionate and professional mental health assistant. Your role is to:
-1. Provide empathetic and supportive responses
-2. Offer general mental health information and coping strategies
-3. Maintain appropriate boundaries and remind users that you're an AI
+MENTAL_HEALTH_PROMPT = """You are a supportive mental health assistant. Your role is to:
+1. Listen empathetically to users' concerns
+2. Provide general information about mental health topics
+3. Suggest healthy coping strategies and self-care practices
 4. Encourage seeking professional help when appropriate
-5. Format your responses using markdown for better readability:
-   - Use **bold** for emphasis
-   - Use bullet points with * for lists
-   - Use proper paragraphs with line breaks
-   - Use > for important quotes or warnings
-6. Use a warm, supportive tone while maintaining professionalism
+5. Maintain a supportive and non-judgmental tone
 
-Important: Always remind users that you are an AI assistant and cannot replace professional mental health care. If someone is in crisis or having thoughts of self-harm, encourage them to contact emergency services or a mental health crisis hotline."""
+Important: While you can offer support and information, you are not a replacement for professional mental health care. Always encourage users to seek professional help for serious concerns.
+
+Keep responses concise, clear, and focused on the user's specific concerns. Use a warm, supportive tone while maintaining appropriate boundaries."""
 
 # Dummy data (same as frontend)
 symptoms = [
@@ -311,30 +317,92 @@ def check_interactions():
 def chat():
     data = request.get_json()
     message = data.get('message', '')
-    session_id = data.get('session_id')
+    user_id = session.get('user_id')
     
     if not message:
         return jsonify({'error': 'Message is required'}), 400
     
     try:
         # Get or create chat session
-        if session_id not in chat_sessions:
-            chat = model.start_chat()
-            # Initialize the chat with the mental health assistant prompt
-            chat.send_message(MENTAL_HEALTH_PROMPT)
-            chat_sessions[session_id] = chat
+        chat = model.start_chat()
+        # Initialize the chat with the mental health assistant prompt
+        chat.send_message(MENTAL_HEALTH_PROMPT)
         
         # Send message and get response
-        response = chat_sessions[session_id].send_message(message)
+        response = chat.send_message(message)
         
-        # Convert markdown to HTML
-        html_response = markdown.markdown(response.text, extensions=['extra'])
+        # Save messages if user is logged in
+        if user_id:
+            user_message = ChatHistory(
+                user_id=user_id,
+                message=message,
+                is_user=True
+            )
+            bot_message = ChatHistory(
+                user_id=user_id,
+                message=response.text,  # Store the raw markdown
+                is_user=False
+            )
+            db.session.add(user_message)
+            db.session.add(bot_message)
+            db.session.commit()
         
         return jsonify({
-            'response': html_response,
-            'session_id': session_id
+            'message': response.text,  # Return the raw markdown
+            'timestamp': datetime.utcnow().isoformat()
         })
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/chat/history', methods=['GET'])
+def get_chat_history():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    chat_history = ChatHistory.query.filter_by(user_id=user_id).order_by(ChatHistory.timestamp.asc()).all()
+    return jsonify([{
+        'id': chat.id,
+        'message': chat.message,
+        'is_user': chat.is_user,
+        'timestamp': chat.timestamp.isoformat()
+    } for chat in chat_history])
+
+@app.route('/api/chat/save', methods=['POST'])
+def save_chat_message():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    data = request.get_json()
+    chat = ChatHistory(
+        user_id=user_id,
+        message=data['message'],
+        is_user=data['is_user']
+    )
+    
+    db.session.add(chat)
+    db.session.commit()
+    
+    return jsonify({
+        'id': chat.id,
+        'message': chat.message,
+        'is_user': chat.is_user,
+        'timestamp': chat.timestamp.isoformat()
+    })
+
+@app.route('/api/chat/history', methods=['DELETE'])
+def delete_chat_history():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        ChatHistory.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
+        return jsonify({'message': 'Chat history deleted successfully'})
+    except Exception as e:
+        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':

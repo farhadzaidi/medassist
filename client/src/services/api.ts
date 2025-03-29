@@ -2,9 +2,16 @@ import { Symptom, Condition, Medication, Interaction } from '../data/mockData';
 
 const API_BASE_URL = 'http://localhost:5001/api';
 
-interface ChatResponse {
-  response: string;
-  session_id: string;
+export interface ChatMessage {
+  id: number;
+  message: string;
+  is_user: boolean;
+  timestamp: string;
+}
+
+export interface ChatResponse {
+  message: string;
+  timestamp: string;
 }
 
 export const api = {
@@ -65,6 +72,61 @@ export const api = {
       throw new Error('Failed to send message');
     }
 
+    return response.json();
+  },
+
+  // Chat methods
+  chat: async (message: string): Promise<ChatResponse> => {
+    const response = await fetch(`${API_BASE_URL}/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ message }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to send message');
+    }
+    return response.json();
+  },
+
+  // Chat history methods
+  getChatHistory: async (): Promise<ChatMessage[]> => {
+    const response = await fetch(`${API_BASE_URL}/chat/history`, {
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch chat history');
+    }
+    return response.json();
+  },
+
+  deleteChatHistory: async (): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/chat/history`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to delete chat history');
+    }
+  },
+
+  saveChatMessage: async (message: string, isUser: boolean): Promise<ChatMessage> => {
+    const response = await fetch(`${API_BASE_URL}/chat/save`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        message,
+        is_user: isUser,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to save chat message');
+    }
     return response.json();
   },
 }; 

@@ -1,18 +1,53 @@
-import { useState, useRef, useEffect } from 'react';
-import { api } from '../services/api';
+import { useState, useEffect, useRef } from 'react';
+import { api, ChatMessage } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import ReactMarkdown from 'react-markdown';
+import { ConfirmationModal } from './ConfirmationModal';
 
 interface Message {
-  text: string;
+  content: string;
   isUser: boolean;
-  timestamp: Date;
+  timestamp: string;
 }
 
 export const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
+  const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      loadChatHistory();
+    } else {
+      setMessages([]);
+    }
+  }, [user]);
+
+  const loadChatHistory = async () => {
+    try {
+      const history = await api.getChatHistory();
+      setMessages(history.map(msg => ({
+        content: msg.message,
+        isUser: msg.is_user,
+        timestamp: msg.timestamp
+      })));
+    } catch (error) {
+      console.error('Failed to load chat history:', error);
+    }
+  };
+
+  const handleDeleteChat = async () => {
+    try {
+      await api.deleteChatHistory();
+      setMessages([]);
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error('Failed to delete chat history:', error);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -22,7 +57,55 @@ export const ChatBot = () => {
     scrollToBottom();
   }, [messages]);
 
-  const formatTime = (date: Date) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage = input.trim();
+    setInput('');
+    setIsLoading(true);
+
+    // Add user message to chat
+    const newUserMessage: Message = {
+      content: userMessage,
+      isUser: true,
+      timestamp: new Date().toISOString()
+    };
+
+    setMessages(prev => [...prev, newUserMessage]);
+
+    try {
+      // Get bot response
+      const response = await api.chat(userMessage);
+      const botMessage: Message = {
+        content: response.message,
+        isUser: false,
+        timestamp: response.timestamp
+      };
+
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      setMessages(prev => [...prev, {
+        content: 'Sorry, I encountered an error. Please try again.',
+        isUser: false,
+        timestamp: new Date().toISOString()
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      handleSubmit(e as any);
+    }
+  };
+
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
     return date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
@@ -30,56 +113,27 @@ export const ChatBot = () => {
     });
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputMessage.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      text: inputMessage,
-      isUser: true,
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsLoading(true);
-
-    try {
-      const response = await api.sendChatMessage(inputMessage, sessionId);
-      setSessionId(response.session_id);
-
-      const botMessage: Message = {
-        text: response.response,
-        isUser: false,
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      const errorMessage: Message = {
-        text: 'Sorry, I encountered an error. Please try again.',
-        isUser: false,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="chat-container">
+      {user && messages.length > 0 && (
+        <div className="chat-header">
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="delete-chat-button"
+          >
+            Delete Chat History
+          </button>
+        </div>
+      )}
       <div className="chat-messages">
         {messages.map((message, index) => (
           <div
             key={index}
             className={`message ${message.isUser ? 'user-message' : 'bot-message'}`}
           >
-            <div
-              className="message-content"
-              dangerouslySetInnerHTML={{ __html: message.text }}
-            />
+            <div className="message-content">
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
             <div className="message-timestamp">
               {formatTime(message.timestamp)}
             </div>
@@ -87,34 +141,44 @@ export const ChatBot = () => {
         ))}
         {isLoading && (
           <div className="message bot-message">
-            <div className="message-content">
-              <div className="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
+            <div className="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSendMessage} className="chat-input-form">
-        <input
-          type="text"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
+      <div className="chat-disclaimer">
+        <p>This is an AI assistant providing general information and support. It is not a replacement for professional mental health care. For serious concerns, please seek help from a qualified mental health professional.</p>
+      </div>
+      <div className="chat-input-form">
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Type your message..."
-          disabled={isLoading}
           className="chat-input"
+          disabled={isLoading}
+          rows={1}
         />
         <button
-          type="submit"
-          disabled={isLoading || !inputMessage.trim()}
+          type="button"
+          onClick={handleSubmit}
+          disabled={isLoading}
           className="send-button"
         >
           Send
         </button>
-      </form>
+      </div>
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteChat}
+        title="Delete Chat History"
+        message="Are you sure you want to delete your chat history? This action cannot be undone."
+      />
     </div>
   );
 }; 
