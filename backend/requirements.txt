@@ -4,4 +4,7 @@ google-generativeai
 markdown
 flask-sqlalchemy
 flask-login
-werkzeug 
+werkzeug
+pytesseract==0.3.10
+Pillow==10.2.0
+pdf2image==1.17.0 
