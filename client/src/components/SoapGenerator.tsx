@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 type QuestionAnswer = [string, string];
 interface InterviewState {
@@ -12,39 +12,41 @@ interface InterviewState {
 const TOTAL_QUESTIONS = 1;
 
 const MedicalInterview: React.FC = () => {
-  const [initialDescription, setInitialDescription] = useState('');
-  const [interviewState, setInterviewState] = useState<InterviewState | null>(null);
-  const [soapNotes, setSoapNotes] = useState('');
+  const [initialDescription, setInitialDescription] = useState("");
+  const [interviewState, setInterviewState] = useState<InterviewState | null>(
+    null
+  );
+  const [soapNotes, setSoapNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   const startInterview = async () => {
     setIsLoading(true);
-    setError('');
+    setError("");
     try {
-      const response = await fetch('http://localhost:5001/api/soap/start', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/soap/start", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ description: initialDescription }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to start interview');
+        throw new Error("Failed to start interview");
       }
 
       const data = await response.json();
       setSessionId(data.session_id);
       setInterviewState({
         currentQuestion: data.question,
-        currentAnswer: '',
+        currentAnswer: "",
         interviewHistory: [],
         isComplete: false,
       });
     } catch (err) {
-      setError('Error starting interview. Please try again.');
+      setError("Error starting interview. Please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -55,12 +57,12 @@ const MedicalInterview: React.FC = () => {
     if (!interviewState || !sessionId) return;
 
     setIsLoading(true);
-    setError('');
+    setError("");
     try {
-      const response = await fetch('http://localhost:5001/api/soap/answer', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/soap/answer", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           answer: interviewState.currentAnswer,
@@ -69,13 +71,16 @@ const MedicalInterview: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit answer');
+        throw new Error("Failed to submit answer");
       }
 
       const data = await response.json();
 
       // Update interview history
-      const newHistory: QuestionAnswer[] = [...interviewState.interviewHistory, [interviewState.currentQuestion, interviewState.currentAnswer]];
+      const newHistory: QuestionAnswer[] = [
+        ...interviewState.interviewHistory,
+        [interviewState.currentQuestion, interviewState.currentAnswer],
+      ];
 
       // Check if we should continue or generate SOAP notes
       if (newHistory.length >= TOTAL_QUESTIONS) {
@@ -88,13 +93,13 @@ const MedicalInterview: React.FC = () => {
       } else {
         setInterviewState({
           currentQuestion: data.question,
-          currentAnswer: '',
+          currentAnswer: "",
           interviewHistory: newHistory,
           isComplete: false,
         });
       }
     } catch (err) {
-      setError('Error submitting answer. Please try again.');
+      setError("Error submitting answer. Please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -103,37 +108,37 @@ const MedicalInterview: React.FC = () => {
 
   const generateSoapNotes = async (history: QuestionAnswer[]) => {
     try {
-      const response = await fetch('http://localhost:5001/api/soap/generate', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/soap/generate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ interview_history: history }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate SOAP notes');
+        throw new Error("Failed to generate SOAP notes");
       }
 
       const data = await response.json();
       setSoapNotes(data.soap_notes);
     } catch (err) {
-      setError('Error generating SOAP notes. Please try again.');
+      setError("Error generating SOAP notes. Please try again.");
       console.error(err);
     }
   };
 
   const handlePrint = () => {
     // Create a new window for printing
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
     // Convert markdown to HTML
     const htmlContent = soapNotes
-      .replace(/#{1,6}\s+(.+)/g, '<h1>$1</h1>') // Headers
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') // Bold
-      .replace(/\n- /g, '<br>- ') // List items
-      .replace(/\n/g, '<br>'); // Line breaks
+      .replace(/#{1,6}\s+(.+)/g, "<h1>$1</h1>") // Headers
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>") // Bold
+      .replace(/\n- /g, "<br>- ") // List items
+      .replace(/\n/g, "<br>"); // Line breaks
 
     // Add the content to the new window
     printWindow.document.write(`
@@ -216,10 +221,10 @@ const MedicalInterview: React.FC = () => {
   };
 
   const handleReset = () => {
-    setInitialDescription('');
+    setInitialDescription("");
     setInterviewState(null);
-    setSoapNotes('');
-    setError('');
+    setSoapNotes("");
+    setError("");
     setSessionId(null);
   };
 
@@ -228,9 +233,9 @@ const MedicalInterview: React.FC = () => {
       <div className="component-description print-hide">
         <h2>Medical Assessment Assistant</h2>
         <p>
-          Get a comprehensive medical assessment through an interactive interview.
-          Our AI-powered assistant will guide you through a series of questions to gather
-          important information about your health concerns.
+          Get a comprehensive medical assessment through an interactive
+          interview. Our AI-powered assistant will guide you through a series of
+          questions to gather important information about your health concerns.
         </p>
       </div>
 
@@ -249,7 +254,7 @@ const MedicalInterview: React.FC = () => {
               disabled={!initialDescription || isLoading}
               className="start-button"
             >
-              {isLoading ? 'Starting...' : 'Begin Assessment'}
+              {isLoading ? "Starting..." : "Begin Assessment"}
             </button>
           </div>
         </div>
@@ -257,11 +262,20 @@ const MedicalInterview: React.FC = () => {
         <div className="interview-container print-hide">
           <div className="question-box">
             <div className="question-header">
-              <h3>Question {interviewState.interviewHistory.length + 1} of {TOTAL_QUESTIONS}</h3>
+              <h3>
+                Question {interviewState.interviewHistory.length + 1} of{" "}
+                {TOTAL_QUESTIONS}
+              </h3>
               <div className="progress-bar">
                 <div
                   className="progress-fill"
-                  style={{ width: `${((interviewState.interviewHistory.length + 1) / TOTAL_QUESTIONS) * 100}%` }}
+                  style={{
+                    width: `${
+                      ((interviewState.interviewHistory.length + 1) /
+                        TOTAL_QUESTIONS) *
+                      100
+                    }%`,
+                  }}
                 />
               </div>
             </div>
@@ -270,10 +284,12 @@ const MedicalInterview: React.FC = () => {
           <div className="answer-box">
             <textarea
               value={interviewState.currentAnswer}
-              onChange={(e) => setInterviewState({
-                ...interviewState,
-                currentAnswer: e.target.value,
-              })}
+              onChange={(e) =>
+                setInterviewState({
+                  ...interviewState,
+                  currentAnswer: e.target.value,
+                })
+              }
               placeholder="Please provide your answer..."
               rows={4}
               className="interview-textarea"
@@ -284,7 +300,7 @@ const MedicalInterview: React.FC = () => {
                 disabled={!interviewState.currentAnswer || isLoading}
                 className="submit-button"
               >
-                {isLoading ? 'Submitting...' : 'Submit Answer'}
+                {isLoading ? "Submitting..." : "Submit Answer"}
               </button>
             </div>
           </div>
@@ -293,27 +309,29 @@ const MedicalInterview: React.FC = () => {
         <div className="assessment-output">
           <div className="interview-history print-hide">
             <h3>Assessment Summary</h3>
-            {interviewState.interviewHistory.map(([question, answer], index) => (
-              <div key={index} className="qa-pair">
-                <p><strong>Q: </strong>{question}</p>
-                <p><strong>A: </strong>{answer}</p>
-              </div>
-            ))}
+            {interviewState.interviewHistory.map(
+              ([question, answer], index) => (
+                <div key={index} className="qa-pair">
+                  <p>
+                    <strong>Q: </strong>
+                    {question}
+                  </p>
+                  <p>
+                    <strong>A: </strong>
+                    {answer}
+                  </p>
+                </div>
+              )
+            )}
           </div>
           <div className="assessment-content">
             <ReactMarkdown>{soapNotes}</ReactMarkdown>
           </div>
           <div className="button-container print-hide">
-            <button
-              onClick={handlePrint}
-              className="print-button"
-            >
+            <button onClick={handlePrint} className="print-button">
               Print Assessment
             </button>
-            <button
-              onClick={handleReset}
-              className="reset-button"
-            >
+            <button onClick={handleReset} className="reset-button">
               Take Another Assessment
             </button>
           </div>
@@ -325,4 +343,4 @@ const MedicalInterview: React.FC = () => {
   );
 };
 
-export default MedicalInterview; 
+export default MedicalInterview;
