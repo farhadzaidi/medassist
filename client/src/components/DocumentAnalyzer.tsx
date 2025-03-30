@@ -70,7 +70,7 @@ export function DocumentAnalyzer() {
 
     try {
       const response = await fetch(
-        "http://localhost:5001/api/documents/process",
+        `${import.meta.env.VITE_API_BASE_URL}/documents/process`,
         {
           method: "POST",
           body: formData,
@@ -196,18 +196,21 @@ export function DocumentAnalyzer() {
 
   const handleSave = async (name: string, analysis: string) => {
     try {
-      const response = await fetch("http://localhost:5001/api/reports/save", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          type: "analysis",
-          title: name,
-          content: analysis,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/reports/save`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            type: "analysis",
+            title: name,
+            content: analysis,
+          }),
+        }
+      );
 
       const responseData = await response.json();
 

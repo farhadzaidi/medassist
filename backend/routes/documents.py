@@ -7,6 +7,9 @@ import os
 from werkzeug.utils import secure_filename
 import tempfile
 from config.config import Config
+from dotenv import load_dotenv
+
+load_dotenv()
 
 documents_bp = Blueprint("documents", __name__)
 
@@ -52,7 +55,7 @@ def analyze_document(text, language="en"):
     """Analyze document text using Gemini."""
     try:
         # Configure Gemini
-        genai.configure(api_key=Config.GEMINI_API_KEY)
+        genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
         model = genai.GenerativeModel("gemini-2.0-flash")
 
         # Language-specific instructions and section headers

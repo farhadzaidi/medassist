@@ -1,6 +1,10 @@
 from flask import Blueprint, jsonify, request
 import google.generativeai as genai
 from config.config import Config
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 soap_bp = Blueprint("soap", __name__)
 
@@ -9,9 +13,12 @@ Your role is to ask one clear, focused question at a time to gather comprehensiv
 
 IMPORTANT LANGUAGE HANDLING:
 1. Detect the language of the patient's initial description
-2. Ask all subsequent questions in the same language as the patient's input
-3. Maintain the same language throughout the interview
-4. Do not mix languages or translate during the interview
+2. Use the SAME language as the patient's initial description for ALL questions and responses
+3. If the patient writes in Spanish, respond in Spanish
+4. If the patient writes in English, respond in English
+5. If the patient writes in any other language, respond in that language
+6. NEVER switch or mix languages during the interview
+7. Maintain the same language throughout the entire conversation
 
 Keep your questions concise and specific. Do not include any explanations or additional text - just the question.
 After receiving the patient's answer, ask the next relevant question.
@@ -31,7 +38,7 @@ Remember to:
 - Return only the question text, no additional formatting or explanation
 - Adapt your questions based on previous answers
 - Stop after 8-10 questions when you have sufficient information
-- Maintain the same language as the patient's input throughout the interview"""
+- Maintain the same language as the patient's initial description"""
 
 SOAP_GENERATION_PROMPT = """Based on the following patient interview, generate a brief summary followed by SOAP notes in English, regardless of the interview language.
 Do not include any explanations about SOAP notes or additional text.
@@ -90,7 +97,7 @@ def start_interview():
 
     try:
         # Configure Gemini
-        genai.configure(api_key=Config.GEMINI_API_KEY)
+        genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
         model = genai.GenerativeModel("gemini-2.0-flash")
 
         # Get or create chat session
@@ -148,7 +155,7 @@ def generate_soap():
         formatted_history = "\n".join([f"Q: {q}\nA: {a}" for q, a in interview_history])
 
         # Configure Gemini
-        genai.configure(api_key=Config.GEMINI_API_KEY)
+        genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
         model = genai.GenerativeModel("gemini-2.0-flash")
 
         # Generate SOAP notes

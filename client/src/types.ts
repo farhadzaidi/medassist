@@ -1,3 +1,14 @@
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+}
+
+export interface AuthResponse {
+  message: string;
+  user: User;
+}
+
 export interface Medication {
   id: string;
   name: string;
@@ -7,6 +18,6 @@ export interface Medication {
 export interface Interaction {
   medication1: string;
   medication2: string;
-  severity: "high" | "moderate" | "low";
+  severity: string;
   description: string;
 }

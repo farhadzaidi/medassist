@@ -27,13 +27,16 @@ const MedicalInterview: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5001/api/soap/start", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ description: initialDescription }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/soap/start`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ description: initialDescription }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to start interview");
@@ -61,16 +64,19 @@ const MedicalInterview: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:5001/api/soap/answer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          answer: interviewState.currentAnswer,
-          session_id: sessionId,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/soap/answer`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            answer: interviewState.currentAnswer,
+            session_id: sessionId,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to submit answer");
@@ -110,13 +116,16 @@ const MedicalInterview: React.FC = () => {
 
   const generateSoapNotes = async (history: QuestionAnswer[]) => {
     try {
-      const response = await fetch("http://localhost:5001/api/soap/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ interview_history: history }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/soap/generate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ interview_history: history }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to generate SOAP notes");
@@ -232,18 +241,21 @@ const MedicalInterview: React.FC = () => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch("/api/reports/save", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          type: "soap",
-          title: `Medical Assessment - ${new Date().toLocaleDateString()}`,
-          content: soapNotes,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/reports/save`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            type: "soap",
+            title: `Medical Assessment - ${new Date().toLocaleDateString()}`,
+            content: soapNotes,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to save assessment");
