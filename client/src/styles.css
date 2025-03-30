@@ -798,7 +798,7 @@ body {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .print-button,
@@ -1370,4 +1370,75 @@ body {
   @page {
     margin: 1cm;
   }
+}
+
+.language-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem auto;
+  padding: 0.75rem 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  max-width: 400px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.language-selector:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-color: #dee2e6;
+}
+
+.language-selector label {
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.language-select {
+  padding: 0.6rem 2.5rem 0.6rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  background-color: white;
+  color: #495057;
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-width: 180px;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  position: relative;
+}
+
+.language-select:hover:not(:disabled) {
+  border-color: #adb5bd;
+  background-color: #f8f9fa;
+}
+
+.language-select:focus:not(:disabled) {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.language-select:disabled {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+  color: #adb5bd;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.language-select option {
+  padding: 0.75rem;
+  background-color: white;
+  color: #495057;
+  font-size: 0.95rem;
 }

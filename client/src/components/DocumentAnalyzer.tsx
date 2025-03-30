@@ -15,6 +15,20 @@ export function DocumentAnalyzer() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
+
+  const languages = [
+    { code: "en", name: "English" },
+    { code: "es", name: "Spanish" },
+    { code: "fr", name: "French" },
+    { code: "de", name: "German" },
+    { code: "it", name: "Italian" },
+    { code: "pt", name: "Portuguese" },
+    { code: "ru", name: "Russian" },
+    { code: "zh", name: "Chinese" },
+    { code: "ja", name: "Japanese" },
+    { code: "ko", name: "Korean" },
+  ];
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -48,8 +62,9 @@ export function DocumentAnalyzer() {
 
     const formData = new FormData();
     documents.forEach((doc) => {
-      formData.append("documents", doc.file);
+      formData.append("files", doc.file);
     });
+    formData.append("language", selectedLanguage);
 
     try {
       const response = await fetch(
@@ -69,12 +84,13 @@ export function DocumentAnalyzer() {
       setDocuments((prev) =>
         prev.map((doc) => ({
           ...doc,
-          analysis: data.results[doc.name],
+          analysis: data.analyses[doc.name] || "Analysis failed",
           error: data.errors[doc.name],
         }))
       );
     } catch (err) {
       setError("Failed to process documents. Please try again.");
+      console.error(err);
     } finally {
       setIsProcessing(false);
     }
@@ -186,7 +202,7 @@ export function DocumentAnalyzer() {
         </p>
       </div>
 
-      <div className="document-upload-container">
+      <div className="upload-section">
         <input
           type="file"
           ref={fileInputRef}
@@ -196,20 +212,38 @@ export function DocumentAnalyzer() {
           className="file-input"
           disabled={isProcessing}
         />
-        <button
-          className="upload-button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isProcessing}
-        >
-          Upload Documents
-        </button>
-        <button
-          className="process-button"
-          onClick={handleProcessDocuments}
-          disabled={isProcessing || documents.length === 0}
-        >
-          {isProcessing ? "Processing..." : "Process Documents"}
-        </button>
+        <div className="button-container">
+          <button
+            className="upload-button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isProcessing}
+          >
+            Upload Documents
+          </button>
+          <button
+            className="process-button"
+            onClick={handleProcessDocuments}
+            disabled={isProcessing || documents.length === 0}
+          >
+            {isProcessing ? "Processing..." : "Process Documents"}
+          </button>
+        </div>
+        <div className="language-selector">
+          <label htmlFor="language-select">Output Language:</label>
+          <select
+            id="language-select"
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            className="language-select"
+            disabled={isProcessing}
+          >
+            {languages.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {error && <div className="error-message">{error}</div>}
