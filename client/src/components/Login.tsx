@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 interface LoginProps {
   onSuccess: () => void;
@@ -7,22 +7,22 @@ interface LoginProps {
 }
 
 export const Login = ({ onSuccess, onRegisterClick }: LoginProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       await login(email, password);
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -56,15 +56,15 @@ export const Login = ({ onSuccess, onRegisterClick }: LoginProps) => {
           />
         </div>
         <button type="submit" disabled={isLoading} className="auth-button">
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? "Logging in..." : "Login"}
         </button>
       </form>
       <p className="auth-switch">
-        Don't have an account?{' '}
+        Don't have an account?{" "}
         <button onClick={onRegisterClick} className="auth-link">
           Register
         </button>
       </p>
     </div>
   );
-}; 
+};

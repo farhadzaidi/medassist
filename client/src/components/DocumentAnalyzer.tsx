@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import "../styles.css";
 import { api } from "../services/api";
 import ReactMarkdown from "react-markdown";
+import { useAuth } from "../contexts/AuthContext";
 
 interface Document {
   file: File;
@@ -16,6 +17,7 @@ export function DocumentAnalyzer() {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const { user } = useAuth();
 
   const languages = [
     { code: "en", name: "English" },
@@ -192,6 +194,35 @@ export function DocumentAnalyzer() {
     }
   };
 
+  const handleSave = async (name: string, analysis: string) => {
+    try {
+      const response = await fetch("http://localhost:5001/api/reports/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          type: "analysis",
+          title: name,
+          content: analysis,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.error || "Failed to save analysis");
+      }
+
+      // Show success message
+      alert("Analysis saved successfully!");
+    } catch (error) {
+      console.error("Error saving analysis:", error);
+      alert("Failed to save analysis. Please try again.");
+    }
+  };
+
   return (
     <div className="document-analyzer">
       <div className="component-description">
@@ -276,13 +307,23 @@ export function DocumentAnalyzer() {
                   <div className="analysis-content">
                     <ReactMarkdown>{doc.analysis}</ReactMarkdown>
                   </div>
-                  <div className="print-button-container">
+                  <div className="analysis-actions">
                     <button
-                      className="print-button"
                       onClick={() => handlePrint(doc.name)}
+                      className="action-button"
                     >
                       Print Analysis
                     </button>
+                    {user && (
+                      <button
+                        onClick={() =>
+                          doc.analysis && handleSave(doc.name, doc.analysis)
+                        }
+                        className="action-button"
+                      >
+                        Save Analysis
+                      </button>
+                    )}
                   </div>
                 </div>
               )

@@ -1,122 +1,45 @@
-import { Symptom, Condition, Medication, Interaction } from '../data/mockData';
+import { Medication, Interaction } from "../types";
 
-const API_BASE_URL = 'http://localhost:5001/api';
-
-export interface ChatMessage {
-  id: number;
-  message: string;
-  is_user: boolean;
-  timestamp: string;
-}
-
-export interface ChatResponse {
-  message: string;
-  timestamp: string;
-}
+const API_BASE_URL = "http://localhost:5001/api";
 
 export const api = {
-  getSymptoms: async (): Promise<Symptom[]> => {
-    const response = await fetch(`${API_BASE_URL}/symptoms`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch symptoms');
-    }
-    return response.json();
-  },
-
-  checkConditions: async (symptoms: string[]): Promise<Condition[]> => {
-    const response = await fetch(`${API_BASE_URL}/check-conditions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ symptoms }),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to check conditions');
-    }
-    return response.json();
-  },
-
   getMedications: async (): Promise<Medication[]> => {
     const response = await fetch(`${API_BASE_URL}/medications`);
     if (!response.ok) {
-      throw new Error('Failed to fetch medications');
+      throw new Error("Failed to fetch medications");
     }
     return response.json();
   },
 
   checkInteractions: async (medications: string[]): Promise<Interaction[]> => {
     const response = await fetch(`${API_BASE_URL}/check-interactions`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ medications }),
     });
     if (!response.ok) {
-      throw new Error('Failed to check interactions');
+      throw new Error("Failed to check interactions");
     }
     return response.json();
   },
 
-  sendChatMessage: async (message: string, sessionId: string | null): Promise<ChatResponse> => {
-    const response = await fetch('http://localhost:5001/api/chat', {
-      method: 'POST',
+  saveReport: async (
+    title: string,
+    content: string,
+    type: "soap" | "analysis"
+  ): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/reports/save`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message, session_id: sessionId }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to send message');
-    }
-
-    return response.json();
-  },
-
-  // Chat methods
-  chat: async (message: string): Promise<ChatResponse> => {
-    const response = await fetch(`${API_BASE_URL}/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ message }),
+      credentials: "include",
+      body: JSON.stringify({ title, content, type }),
     });
     if (!response.ok) {
-      throw new Error('Failed to send message');
+      throw new Error("Failed to save report");
     }
-    return response.json();
   },
-
-  // Chat history methods
-  getChatHistory: async (): Promise<ChatMessage[]> => {
-    const response = await fetch(`${API_BASE_URL}/chat/history`, {
-      credentials: 'include',
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch chat history');
-    }
-    return response.json();
-  },
-
-  saveChatMessage: async (message: string, isUser: boolean): Promise<ChatMessage> => {
-    const response = await fetch(`${API_BASE_URL}/chat/save`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        message,
-        is_user: isUser,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to save chat message');
-    }
-    return response.json();
-  },
-}; 
+};

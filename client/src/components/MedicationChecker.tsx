@@ -1,14 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
-import { Medication, Interaction } from '../data/mockData';
-import { api } from '../services/api';
+import { useState, useEffect, useRef } from "react";
+import { Medication, Interaction } from "../types";
+import { api } from "../services/api";
 
 interface MedicationCheckerProps {
   isActive: boolean;
 }
 
 export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
-  const [selectedMedications, setSelectedMedications] = useState<Medication[]>([]);
-  const [query, setQuery] = useState('');
+  const [selectedMedications, setSelectedMedications] = useState<Medication[]>(
+    []
+  );
+  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Medication[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -30,8 +32,8 @@ export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
         const data = await api.getMedications();
         setAllMedications(data);
       } catch (err) {
-        console.error('Error fetching medications:', err);
-        setError('Failed to fetch medications. Please try again.');
+        console.error("Error fetching medications:", err);
+        setError("Failed to fetch medications. Please try again.");
       } finally {
         setIsLoadingMedications(false);
       }
@@ -48,9 +50,10 @@ export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
       return;
     }
 
-    const filteredMedications = allMedications.filter(medication =>
-      medication.name.toLowerCase().includes(query.toLowerCase()) &&
-      !selectedMedications.some(selected => selected.id === medication.id)
+    const filteredMedications = allMedications.filter(
+      (medication) =>
+        medication.name.toLowerCase().includes(query.toLowerCase()) &&
+        !selectedMedications.some((selected) => selected.id === medication.id)
     );
     setSuggestions(filteredMedications);
     setIsOpen(true);
@@ -58,18 +61,21 @@ export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSelectMedication = (medication: Medication) => {
-    setSelectedMedications(prev => [...prev, medication]);
-    setQuery('');
+    setSelectedMedications((prev) => [...prev, medication]);
+    setQuery("");
     setSuggestions([]);
     setIsOpen(false);
     setIsSubmitted(false);
@@ -77,25 +83,27 @@ export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
   };
 
   const handleRemoveMedication = (medicationId: string) => {
-    setSelectedMedications(prev => prev.filter(m => m.id !== medicationId));
+    setSelectedMedications((prev) => prev.filter((m) => m.id !== medicationId));
     setIsSubmitted(false);
     setError(null);
   };
 
   const handleSubmit = async () => {
     if (selectedMedications.length === 0) {
-      setError('Please select at least one medication');
+      setError("Please select at least one medication");
       return;
     }
 
     setIsLoading(true);
     setError(null);
     try {
-      const results = await api.checkInteractions(selectedMedications.map(m => m.id));
+      const results = await api.checkInteractions(
+        selectedMedications.map((m) => m.id)
+      );
       setInteractions(results);
       setIsSubmitted(true);
     } catch (err) {
-      setError('Failed to check interactions. Please try again.');
+      setError("Failed to check interactions. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +117,9 @@ export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
     <div>
       <div className="search-container">
         <div className="search-description">
-          Enter your medications to check for potential interactions and side effects. Select multiple medications to see how they might interact with each other.
+          Enter your medications to check for potential interactions and side
+          effects. Select multiple medications to see how they might interact
+          with each other.
         </div>
         <div className="search-wrapper" ref={searchRef}>
           <div
@@ -118,10 +128,7 @@ export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
           >
             <div className="selected-symptoms">
               {selectedMedications.map((medication) => (
-                <span
-                  key={medication.id}
-                  className="symptom-tag"
-                >
+                <span key={medication.id} className="symptom-tag">
                   {medication.name}
                   <button
                     onClick={(e) => {
@@ -141,36 +148,47 @@ export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setIsOpen(true)}
-              placeholder={selectedMedications.length === 0 ? "Search for medications..." : ""}
+              placeholder={
+                selectedMedications.length === 0
+                  ? "Search for medications..."
+                  : ""
+              }
               className="search-input"
               disabled={isLoading || isLoadingMedications}
             />
           </div>
-          {isOpen && (isLoadingMedications ? (
-            <div className="suggestions-dropdown">
-              <div className="suggestion-item loading">Loading medications...</div>
-            </div>
-          ) : suggestions.length > 0 && (
-            <div className="suggestions-dropdown">
-              {suggestions.map((medication) => (
-                <div
-                  key={medication.id}
-                  className="suggestion-item"
-                  onClick={() => handleSelectMedication(medication)}
-                >
-                  <div className="suggestion-name">{medication.name}</div>
-                  <div className="suggestion-description">{medication.description}</div>
+          {isOpen &&
+            (isLoadingMedications ? (
+              <div className="suggestions-dropdown">
+                <div className="suggestion-item loading">
+                  Loading medications...
                 </div>
-              ))}
-            </div>
-          ))}
+              </div>
+            ) : (
+              suggestions.length > 0 && (
+                <div className="suggestions-dropdown">
+                  {suggestions.map((medication) => (
+                    <div
+                      key={medication.id}
+                      className="suggestion-item"
+                      onClick={() => handleSelectMedication(medication)}
+                    >
+                      <div className="suggestion-name">{medication.name}</div>
+                      <div className="suggestion-description">
+                        {medication.description}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            ))}
         </div>
         <button
           onClick={handleSubmit}
           disabled={selectedMedications.length === 0 || isLoading}
           className="submit-button"
         >
-          {isLoading ? 'Checking...' : 'Check Interactions'}
+          {isLoading ? "Checking..." : "Check Interactions"}
         </button>
       </div>
       {error && <div className="error-message">{error}</div>}
@@ -185,24 +203,37 @@ export const MedicationChecker = ({ isActive }: MedicationCheckerProps) => {
                   className={`condition-card ${interaction.severity}`}
                 >
                   <div className="interaction-severity">
-                    Severity: {interaction.severity.charAt(0).toUpperCase() + interaction.severity.slice(1)}
+                    Severity:{" "}
+                    {interaction.severity.charAt(0).toUpperCase() +
+                      interaction.severity.slice(1)}
                   </div>
                   <div className="interaction-medications">
-                    <strong>Medications:</strong> {
-                      allMedications.find(m => m.id === interaction.medication1)?.name
-                    } + {
-                      allMedications.find(m => m.id === interaction.medication2)?.name
+                    <strong>Medications:</strong>{" "}
+                    {
+                      allMedications.find(
+                        (m) => m.id === interaction.medication1
+                      )?.name
+                    }{" "}
+                    +{" "}
+                    {
+                      allMedications.find(
+                        (m) => m.id === interaction.medication2
+                      )?.name
                     }
                   </div>
-                  <div className="interaction-description">{interaction.description}</div>
+                  <div className="interaction-description">
+                    {interaction.description}
+                  </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="condition-card">No interactions found between the selected medications.</div>
+            <div className="condition-card">
+              No interactions found between the selected medications.
+            </div>
           )}
         </div>
       )}
     </div>
   );
-}; 
+};

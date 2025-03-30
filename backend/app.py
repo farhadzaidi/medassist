@@ -3,10 +3,10 @@ from flask_cors import CORS
 from config.config import Config
 from models.models import db
 from routes.auth import auth_bp
-from routes.chat import chat_bp
-from routes.health import health_bp
 from routes.soap import soap_bp
 from routes.documents import documents_bp
+from routes.medications import medications_bp
+from routes.reports import reports_bp
 
 
 def create_app():
@@ -21,10 +21,10 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(auth_bp)
-    app.register_blueprint(chat_bp)
-    app.register_blueprint(health_bp)
     app.register_blueprint(soap_bp)
     app.register_blueprint(documents_bp)
+    app.register_blueprint(medications_bp)
+    app.register_blueprint(reports_bp)
 
     # Create database tables
     with app.app_context():

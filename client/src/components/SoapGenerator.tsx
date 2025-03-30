@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { useAuth } from "../contexts/AuthContext";
 
 type QuestionAnswer = [string, string];
 interface InterviewState {
@@ -20,6 +21,7 @@ const MedicalInterview: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const startInterview = async () => {
     setIsLoading(true);
@@ -228,6 +230,33 @@ const MedicalInterview: React.FC = () => {
     setSessionId(null);
   };
 
+  const handleSave = async () => {
+    try {
+      const response = await fetch("/api/reports/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          type: "soap",
+          title: `Medical Assessment - ${new Date().toLocaleDateString()}`,
+          content: soapNotes,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save assessment");
+      }
+
+      // Show success message
+      alert("Assessment saved successfully!");
+    } catch (error) {
+      console.error("Error saving assessment:", error);
+      alert("Failed to save assessment. Please try again.");
+    }
+  };
+
   return (
     <div className="medical-interview">
       <div className="component-description print-hide">
@@ -327,10 +356,15 @@ const MedicalInterview: React.FC = () => {
           <div className="assessment-content">
             <ReactMarkdown>{soapNotes}</ReactMarkdown>
           </div>
-          <div className="button-container print-hide">
-            <button onClick={handlePrint} className="print-button">
-              Print Assessment
+          <div className="assessment-actions">
+            <button onClick={handlePrint} className="action-button">
+              Print Results
             </button>
+            {user && (
+              <button onClick={handleSave} className="action-button">
+                Save Results
+              </button>
+            )}
             <button onClick={handleReset} className="reset-button">
               Take Another Assessment
             </button>
