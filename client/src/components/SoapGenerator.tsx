@@ -10,7 +10,7 @@ interface InterviewState {
   isComplete: boolean;
 }
 
-const TOTAL_QUESTIONS = 1;
+const TOTAL_QUESTIONS = 10;
 
 const MedicalInterview: React.FC = () => {
   const [initialDescription, setInitialDescription] = useState("");
@@ -311,11 +311,10 @@ const MedicalInterview: React.FC = () => {
                 <div
                   className="progress-fill"
                   style={{
-                    width: `${
-                      ((interviewState.interviewHistory.length + 1) /
+                    width: `${((interviewState.interviewHistory.length + 1) /
                         TOTAL_QUESTIONS) *
                       100
-                    }%`,
+                      }%`,
                   }}
                 />
               </div>
