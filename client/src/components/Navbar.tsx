@@ -1,4 +1,4 @@
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from "../contexts/AuthContext";
 
 interface NavbarProps {
   onLoginClick: () => void;
@@ -12,7 +12,7 @@ export const Navbar = ({ onLoginClick, onRegisterClick }: NavbarProps) => {
     try {
       await logout();
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
@@ -22,7 +22,7 @@ export const Navbar = ({ onLoginClick, onRegisterClick }: NavbarProps) => {
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">Health Portal</div>
+      <div className="navbar-brand">MedAssist</div>
       <div className="navbar-auth">
         {user ? (
           <div className="navbar-user">
@@ -44,4 +44,4 @@ export const Navbar = ({ onLoginClick, onRegisterClick }: NavbarProps) => {
       </div>
     </nav>
   );
-}; 
+};
